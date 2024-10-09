@@ -1,26 +1,39 @@
-import React from "react";
+import React, { useState } from 'react';
 
-//include images into your bundle
-import rigoImage from "../../img/rigo-baby.jpg";
 
-//create your first component
 const Home = () => {
-	return (
-		<div className="text-center">
-			<h1 className="text-center mt-5">Hello Rigo!</h1>
-			<p>
-				<img src={rigoImage} />
-			</p>
-			<a href="#" className="btn btn-success">
-				If you see this green button... bootstrap is working...
-			</a>
-			<p>
-				Made by{" "}
-				<a href="http://www.4geeksacademy.com">4Geeks Academy</a>, with
-				love!
-			</p>
-		</div>
-	);
+  const [toDo, setToDo] = useState("");
+  const [toDoList, setToDoList] = useState([]);
+
+  const handleKeyDown = (e) => {
+    if (e.key === 'Enter' && toDo) {
+      setToDoList([...toDoList, toDo]);
+      setToDo("");
+    }
+  };
+
+  return (
+    <div className="text-center container my-5">
+      <h1 className="text-secondary "><em>TODOS</em></h1>
+      <input
+        className="form-control"
+        placeholder="Enter a task here"
+        value={toDo}
+        onChange={(e) => setToDo(e.target.value)}
+        onKeyDown={handleKeyDown}
+      />
+      <ol className="todo-list list-group">
+        {toDoList.map((task, index) => (
+          <li className="list-group-item" key={index}>{task}</li>
+        ))}
+		 {toDoList.length > 0 && (
+          <li className="list-group-item text-muted">
+            Total Tasks: {toDoList.length}
+          </li>
+        )}
+      </ol>
+    </div>
+  );
 };
 
 export default Home;
