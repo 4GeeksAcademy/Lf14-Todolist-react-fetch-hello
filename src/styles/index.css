@@ -7,3 +7,29 @@
   .btn-close {
     cursor: pointer;
   }
+ .todo-list{
+  z-index: 3;
+ }
+
+ .leaf-1{
+  width:;
+  z-index: -2;
+  align-content: center;
+ 
+}
+
+.leaf-2{
+  width:;
+  z-index: -2;
+  align-content: center;
+ 
+}
+
+.leaf-3{
+  width: auto;
+  z-index: -3;
+  display: flex;
+  align-content: center;
+ 
+}
+

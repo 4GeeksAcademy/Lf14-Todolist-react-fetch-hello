@@ -25,22 +25,33 @@ const ToDoList = () => {
       
       <ol className="todo-list list-group text-start">
         {toDoList.map((task, index) => (
-          <li className="list-group-item todo-item" key={index}>{task}
-            <button type="button" class="btn-close" aria-label="Close" onClick={()=>{
-              console.log(index)
-              let copyToDoList =[...toDoList]
-            copyToDoList.splice(index, 1)
-            console.log(copyToDoList)
-            setToDoList(copyToDoList)
-            }}></button>
-          </li>
+          <li className="list-group-item todo-item" key={index}>
+          {task}
+          <button
+            type="button"
+            className="btn-close"
+            aria-label="Close"
+            onClick={() => {
+              setToDoList((prevListItem) => prevListItem.filter((_, i) => i !== index));
+            }}
+          ></button>
+        </li>
         ))}
         {toDoList.length > 0 && (
           <li className="list-group-item text-muted">
             Total Tasks: {toDoList.length}
           </li>
         )}
+        <div clasName="leaf-container">
+          <div className="leaf-1 p-1 shadow">
+          </div>
+          <div className="leaf-2 p-1 shadow">
+          </div>
+          <div className="leaf-3 p-1 shadow">
+          </div>
+          </div>
       </ol>
+  
     </div>
   );
 };
