@@ -1,7 +1,7 @@
 import React, { useState } from 'react';
 
 
-const Home = () => {
+const ToDoList = () => {
   const [toDo, setToDo] = useState("");
   const [toDoList, setToDoList] = useState([]);
 
@@ -11,10 +11,10 @@ const Home = () => {
       setToDo("");
     }
   };
-
+  
   return (
-    <div className="text-center container my-5">
-      <h1 className="text-secondary "><em>TODOS</em></h1>
+    <div className="text-center container my-5 ">
+      <h1 className="text-muted "><em>ToDoList</em></h1>
       <input
         className="form-control"
         placeholder="Enter a task here"
@@ -22,11 +22,20 @@ const Home = () => {
         onChange={(e) => setToDo(e.target.value)}
         onKeyDown={handleKeyDown}
       />
-      <ol className="todo-list list-group">
+      
+      <ol className="todo-list list-group text-start">
         {toDoList.map((task, index) => (
-          <li className="list-group-item" key={index}>{task}</li>
+          <li className="list-group-item todo-item" key={index}>{task}
+            <button type="button" class="btn-close" aria-label="Close" onClick={()=>{
+              console.log(index)
+              let copyToDoList =[...toDoList]
+            copyToDoList.splice(index, 1)
+            console.log(copyToDoList)
+            setToDoList(copyToDoList)
+            }}></button>
+          </li>
         ))}
-		 {toDoList.length > 0 && (
+        {toDoList.length > 0 && (
           <li className="list-group-item text-muted">
             Total Tasks: {toDoList.length}
           </li>
@@ -36,4 +45,4 @@ const Home = () => {
   );
 };
 
-export default Home;
+export default ToDoList;
