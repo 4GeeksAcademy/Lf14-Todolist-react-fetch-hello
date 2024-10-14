@@ -11,22 +11,25 @@
   z-index: 3;
  }
 
+ .leaf-container{
+  z-index: -1;
+ }
  .leaf-1{
-  width:;
-  z-index: -2;
+  width:auto;
+  z-index: -1;
   align-content: center;
  
 }
 
 .leaf-2{
-  width:;
+  width:auto;
   z-index: -2;
   align-content: center;
  
 }
 
 .leaf-3{
-  width: auto;
+  width:auto;
   z-index: -3;
   display: flex;
   align-content: center;
