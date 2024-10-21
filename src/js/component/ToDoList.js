@@ -67,6 +67,22 @@ const ToDoList = () => {
       })
       .catch((error) => console.error(error));
   };
+  const handleClearAll = () => {
+    fetch("https://playground.4geeks.com/todo/users/lf14", {
+      method: "DELETE",
+      headers: {
+        "Content-Type": "application/json",
+      },
+    })
+      .then((resp) => {
+        if (resp.ok) {
+          setToDoList([]); // Elimina toda la lista
+        } else {
+          console.error("Error clearing tasks from API");
+        }
+      })
+      .catch((error) => console.error(error));
+  };
 
   return (
     <div className="text-center container my-5">
@@ -78,6 +94,7 @@ const ToDoList = () => {
         onChange={(e) => setToDo(e.target.value)}
         onKeyDown={handleKeyDown}
       />
+       
       <ol className="todo-list list-group text-start">
         {toDoList.map((task, index) => (
           <li className="list-group-item todo-item" key={index}>
@@ -103,6 +120,9 @@ const ToDoList = () => {
           </div>
         )}
       </ol>
+      <button className="btn btn-danger my-3" onClick={handleClearAll}>
+        Clear All
+      </button>
     </div>
   );
 };
