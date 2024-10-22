@@ -4,86 +4,99 @@ const ToDoList = () => {
   const [toDo, setToDo] = useState("");
   const [toDoList, setToDoList] = useState([]);
 
- // useEffect cargar las tareas desde la API
+  // useEffect para cargar las tareas desde la API
   useEffect(() => {
+    getTodo();
+  }, []);
+
+  const getTodo = () => {
     fetch("https://playground.4geeks.com/todo/users/lf14")
       .then((resp) => {
-        console.log(resp.status);// Imprime el estado de la respuesta
+        console.log(resp.status); // Imprime el estado de la respuesta
         return resp.json(); // Convierte la respuesta
       })
       .then((data) => {
-        console.log(data);//Imprime lo que recibe
+        console.log(data); // Imprime lo que recibe
         if (data && Array.isArray(data.todos)) {
-          setToDoList(data.todos);//Actualiza la lista
+          setToDoList(data.todos); // Actualiza la lista
         } else {
-          console.error("Invalid data format", data);// Maneja el error si el formato no es correcto
+          console.error("Invalid data format", data); // Maneja el error si el formato no es correcto
         }
+        setToDo("");
       })
-      .catch((error) => {
-        console.error(error); //Maneja el error si la solicitud falla
-      });
-  }, []);//segundo parametro array vacío, xa que se ejecute solo una vez tras cargar
 
-  //Enter para agregar tareas
+      .catch((error) => {
+        console.error(error); // Maneja el error si la solicitud falla
+      });
+  };
+
+  // Enter para agregar tareas
   const handleKeyDown = (e) => {
     if (e.key === 'Enter' && toDo) {
-      const newTask = { label: toDo, done: false };// nueva tarea
+      const newTask = { label: toDo, done: false }; // Nueva tarea
       fetch("https://playground.4geeks.com/todo/todos/lf14", {
         method: 'POST',
-        body: JSON.stringify(newTask),//JSOnificando
+        body: JSON.stringify(newTask), // JSONificando
         headers: {
           'Content-Type': 'application/json',
         },
       })
         .then((resp) => {
-          return resp.json();
-        })
-        .then((data) => {
-          if (data && Array.isArray(data.todos)) {
-            setToDoList(data.todos)//Actualiza
+          if (resp.status === 201) {
+            getTodo(); // Actualiza la lista de tareas después de agregar una nueva
           } else {
-            setToDoList([...toDoList, newTask]);
+            console.error("Error al agregar la tarea");
           }
-          setToDo(""); //Campo vacío para siguiente tarea
         })
         .catch((error) => console.error(error));
     }
   };
 
+  // Función para manejar la eliminación de tareas
   const handleDelete = (index) => {
     const taskToDelete = toDoList[index]; // Tarea que se va a eliminar
-    fetch(`https://playground.4geeks.com/todo/todos/${taskToDelete.id}`, {
-      method: "DELETE",
-      headers: {//Sin body por que ya inlcuye el ID la url y si no da error
-        "Content-Type": "application/json",
-      },
-    })
-      .then((resp) => {
-        if (resp.ok) {
-          setToDoList((prevListItem) => prevListItem.filter((_, i) => i !== index));//actualiza 
-        } else {
-          console.error("Error deleting task from API");
-        }
+    if (taskToDelete && taskToDelete.id) {
+      fetch(`https://playground.4geeks.com/todo/todos/${taskToDelete.id}`, {
+        method: "DELETE",
+        headers: {
+          "Content-Type": "application/json",
+        },
       })
-      .catch((error) => console.error(error));
-  };
-  const handleClearAll = () => {
-    fetch("https://playground.4geeks.com/todo/users/lf14", {
-      method: "DELETE",
-      headers: {
-        "Content-Type": "application/json",
-      },
-    })
-      .then((resp) => {
-        if (resp.ok) {
-          setToDoList([]); // Elimina toda la lista
-        } else {
-          console.error("Error clearing tasks from API");
-        }
-      })
-      .catch((error) => console.error(error));
+        .then((resp) => {
+          if (resp.status === 204) {
+            getTodo(); // Actualiza la lista de tareas después de eliminar una
+          } else {
+            console.error("Error al eliminar la tarea");
+          }
+        })
+        .catch((error) => console.error(error));
+    } else {
+      console.error("Task does not have a valid id", taskToDelete);
+    }
   };
 
+  const handleClearAll = () => {
+    // Crear un array de promesas para eliminar cada tarea individualmente
+    const deletePromises = toDoList.map(task =>
+      fetch(`https://playground.4geeks.com/todo/todos/${task.id}`, {
+        method: "DELETE",
+        headers: {
+          "Content-Type": "application/json",
+        },
+      })
+    );
+  
+    // Ejecutar todas las promesas y luego limpiar la lista
+    Promise.all(deletePromises)
+      .then(results => {
+        if (results.every(resp => resp.ok)) {
+          setToDoList([]); // Limpiar toda la lista
+        } else {
+          console.error("Error clearing some tasks from API");
+        }
+      })
+      .catch(error => console.error(error));
+  };
   return (
     <div className="text-center container my-5">
       <h1 className="text-muted"><em>ToDoList</em></h1>
@@ -94,7 +107,6 @@ const ToDoList = () => {
         onChange={(e) => setToDo(e.target.value)}
         onKeyDown={handleKeyDown}
       />
-       
       <ol className="todo-list list-group text-start">
         {toDoList.map((task, index) => (
           <li className="list-group-item todo-item" key={index}>
@@ -121,8 +133,8 @@ const ToDoList = () => {
         )}
       </ol>
       <button className="btn btn-danger my-3" onClick={handleClearAll}>
-        Clear All
-      </button>
+  Clear All
+</button>
     </div>
   );
 };
